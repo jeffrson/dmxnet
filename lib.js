@@ -99,8 +99,9 @@ class dmxnet {
     // ToDo: IPv6
     // ToDo: Multicast
     // Catch Socket errors
-    this.listener4.on('error', function (err) {
-      this.handleError(new Error('Socket error: ', err));
+    // Arrow function: `this` must be the dmxnet instance, not the socket.
+    this.listener4.on('error', (err) => {
+      this.handleError(new Error('Socket error: ' + err.message, { cause: err }));
     });
     // Register listening object
     this.listener4.on('message', (msg, rinfo) => {
@@ -111,6 +112,10 @@ class dmxnet {
     this.logger.info('Listening on port ' + this.port);
     // Open Socket for sending broadcast data
     this.socket = dgram.createSocket('udp4');
+    // Without a listener, an 'error' event on this socket would crash the process.
+    this.socket.on('error', (err) => {
+      this.handleError(new Error('Socket error: ' + err.message, { cause: err }));
+    });
     this.socket.bind(() => {
       this.socket.setBroadcast(true);
       this.socket_ready = true;
