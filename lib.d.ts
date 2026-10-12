@@ -124,7 +124,10 @@ export interface DmxnetOptions {
     errFunc?: (err: Error) => void
 }
 
-declare interface dmxnet extends Required<Omit<DmxnetOptions, 'listen'>> { }
+// 'listen' is stored as this.port (different name, so cannot be Required).
+// 'errFunc' is only assigned when typeof options.errFunc === 'function', so it
+// may be undefined on the instance — Required would incorrectly exclude that.
+declare interface dmxnet extends Required<Omit<DmxnetOptions, 'listen' | 'errFunc'>> { }
 
 /** Class representing the core dmxnet structure */
 declare class dmxnet {
