@@ -518,12 +518,8 @@ class sender {
    */
   stop() {
     clearInterval(this.interval);
-    this.parent.senders = this.parent.senders.filter(function (value) {
-      if (value === this) {
-        return false;
-      }
-      return true;
-    });
+    // Arrow function: in strict mode a plain callback has no `this`, so the sender was never removed.
+    this.parent.senders = this.parent.senders.filter((value) => value !== this);
     this.socket.close();
   }
 }
